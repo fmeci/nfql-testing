@@ -7,6 +7,7 @@ import re
 import string
 from xml.dom import minidom
 import json
+datatype_mappings={'unsigned64':'RULE_S1_64','unsigned32':'RULE_S1_32','unsigned16':'RULE_S1_16','unsigned8':'RULE_S1_8',
 names=[]
 reserved = {
     'filter' : 'filterKeyword',
@@ -78,14 +79,10 @@ def t_GT(t):
     return t
 xml_data()
 tokens = ['GT','EQ','LT','LTEQ','GTEQ',
-          'id', 'STRING','IPv4','IPv6','int','MAC',
-          'ML','MG','LCBRACKET','RCBRACKET',
-          'LPAREN','RPAREN']+list(reserved.values())
+          'id', 'string','IPv4','IPv6','int','MAC',
+          'ML','MG']+list(reserved.values())
 #literals = "+-*/(),."
-t_LPAREN  = r'\('
-t_RPAREN  = r'\)'
-t_LCBRACKET = r'\{'
-t_RCBRACKET = r'\}'
+
 
 
 def t_IPv4(t):
