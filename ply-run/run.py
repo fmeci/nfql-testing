@@ -8,6 +8,7 @@ import string
 from xml.dom import minidom
 import json
 datatype_mappings={'unsigned64':'RULE_S1_64','unsigned32':'RULE_S1_32','unsigned16':'RULE_S1_16','unsigned8':'RULE_S1_8',
+                  'ipv4Address':'RULE_S1_32','ipv6Address':'RULE_S1_128','macAddress':'RULE_S1_48',}
 names=[]
 reserved = {
     'filter' : 'filterKeyword',
@@ -19,6 +20,7 @@ reserved = {
     'bitOR': 'bitORKeyword',
     'bitAND' : 'bitANDKeyword',
     }
+literals = "+-*/(){},."
 entities={}
 def xml_data():
     xmldoc = minidom.parse('ipfix.xml')
@@ -270,10 +272,12 @@ def p_error(p):
 import ply.yacc as yacc
 parser=yacc.yacc()
 s=input(data)
+result=parser.parse(s,debug=1)
 result=parser.parse(s,debug=0)
 #print (result)
 #with open('query.json', mode='w', encoding='utf-8') as f:  
 #    json.dump(entities, f,indent=2)
+print(filters)
 for name in filters:
     print(name)
 
