@@ -273,13 +273,10 @@ import ply.yacc as yacc
 parser=yacc.yacc()
 s=input(data)
 result=parser.parse(s,debug=1)
-result=parser.parse(s,debug=0)
 #print (result)
 #with open('query.json', mode='w', encoding='utf-8') as f:  
 #    json.dump(entities, f,indent=2)
 print(filters)
-for name in filters:
-    print(name)
 
 class FilterRule:
     def __init__(self, name, value, datatype, delta, op):
