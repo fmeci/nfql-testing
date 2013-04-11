@@ -2,7 +2,7 @@ __author__ = 'd'
 from NFQL_Tokenizer import *
 import ply.yacc as yacc
 import re
-
+import json
 
 class FilterRule:
     def __init__(self, name, value, datatype, delta, op):
@@ -30,10 +30,15 @@ class Rule(object):
         self.branch_mask = branch_mask
 
 
+datatype_mappings = {'unsigned64': 'RULE_S1_64', 'unsigned32': 'RULE_S1_32', 'unsigned16': 'RULE_S1_16',
+                     'unsigned8': 'RULE_S1_8',
+                     'ipv4Address': 'RULE_S1_32', 'ipv6Address': 'RULE_S1_128', 'macAddress': 'RULE_S1_48', }
 class Parser :
     tokens = Tokenizer.tokens
     filters = []
+    filterRules=[]
     xml=[]
+    entities={}
     def p_filter(self,p):
         '''
         filter : filterKeyword id '{' filter_rule_1n '}'
@@ -98,7 +103,18 @@ class Parser :
         t[0] = t[1]
 
     def p_infix_rule(self,p):
-        'infix_rule : arg op arg'
+        'infix_rule : arg_names op arg'
+        #print(self.entities.keys())
+        dt=''
+        opt=''
+        for ps in p[1]:
+            dt=ps
+        for op in p[2]:
+            opt = op
+        print(p[0])
+        rdt=datatype_mappings[self.entities[dt]]
+        fl=FilterRule(dt,p[3],rdt,0,opt)
+        self.filterRules.append(fl)
         p[1].extend(p[3])
 
     def p_op(self,p):
@@ -113,7 +129,7 @@ class Parser :
            | inKeyword
            | notinKeyword
         '''
-        p[0] = (p[1], p.lineno(1))
+        p[0] = p[1] #lineno
 
     def p_rule_prefix(self,p):
         '''
@@ -137,10 +153,8 @@ class Parser :
 
     def p_arg(self,p): #TODO
         '''
-        arg : id
-            | IPv6
+        arg : IPv6
             | IPv4
-            | ent
             | CIDR
             | MAC
             | int
@@ -148,7 +162,11 @@ class Parser :
         '''
         p[0] = [p[1]]
 
-
+    def p_arg_names(self,p):
+        '''
+        arg_names : id
+        '''
+        p[0]=[p[1]]
     def p_cidr(self,p):
         '''
         CIDR : IPv4 '/' int
@@ -166,19 +184,31 @@ class Parser :
         parser = yacc.yacc(module=self)
         lexer = Tokenizer().build()
         self.xml = Tokenizer.names
+        self.entities=Tokenizer.entities
         return yacc.parse(data,tracking=True,lexer=lexer)
 
 
 if __name__ == "__main__":
     parsr = Parser()
-
-    try:
-        s = input('debug > ') # Use raw_input on Python 2
-    except EOFError:
-        pass
-
-    parsr.Parse(s)
-    print(parsr.filters)
-
+    tests=['filter v4 { sourceIPv4Address = 18.0.0.1}','filter v6 {sourceIPv6Address=::1}','filter off{fragmentOffset=8}']
+    #try:
+        #s = input('debug > ') # Use raw_input on Python 2
+    #except EOFError:
+    #    pass
+    for test in tests:
+        parsr.Parse(test)
+    lst=[]
+    for pr in parsr.filterRules:
+        print(vars(pr))
+        lst.append({'term':vars(pr)})
+    clause={'clause':lst}
+    filter={'dnf-expr':[clause]}
+    branchset=[]
+    branchset.append({'filter':filter})
+    query={'branchset':branchset,'grouper':{},'ungrouper':{}}
+    fjson = json.dumps(query, indent=2)
+    file = open('query-session.json', 'w')
+    file.write(fjson)
+    file.close
 
 
