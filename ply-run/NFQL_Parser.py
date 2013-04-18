@@ -3,7 +3,7 @@ from NFQL_Tokenizer import *
 import ply.yacc as yacc
 import re
 import json
-
+import types
 class FilterRule:
     def __init__(self, name, value, datatype, delta, op):
         self.offset = {
@@ -31,7 +31,8 @@ class Rule(object):
 
 
 datatype_mappings = {'unsigned64': 'RULE_S1_64', 'unsigned32': 'RULE_S1_32', 'unsigned16': 'RULE_S1_16',
-                     'unsigned8': 'RULE_S1_8',
+                     'unsigned8': 'RULE_S1_8','EQ':'RULE_EQ','GT':'RULE_GT','LT':'RULE_LT','LTEQ':'RULE_LE',
+                     'GTEQ':'RULE_GE','IN':'RULE_IN',
                      'ipv4Address': 'RULE_S1_32', 'ipv6Address': 'RULE_S1_128', 'macAddress': 'RULE_S1_48', }
 class Parser :
     tokens = Tokenizer.tokens
@@ -44,13 +45,17 @@ class Parser :
         filter : filterKeyword id '{' filter_rule_1n '}'
         '''
         p[0] = Filter(p[2], p.lineno(2), p[4])
+        #print(p[4][0].op)
         self.filters.append(p[0])#TODO p4 is empty
 
+    #def p_filter_rule_1(self, p):
+    #    'filter_rule_1n : filter_rule'
+    #    p[0] = p[1]
 
-    def p_filter_rule_1n(self,p):
-        'filter_rule_1n : filter_rule filter_rule_1n'
-        p[2].extend([p[1]])
-        p[0] = p[2]
+    def p_filter_rule_1n(self, p):
+        'filter_rule_1n : filter_rule newline filter_rule_1n'
+        p[3].extend([p[1]])
+        p[0] = p[3]
 
     def p_filter_rule_0(self,t):
         'filter_rule_1n :'
@@ -61,6 +66,7 @@ class Parser :
         filter_rule : or_rule
         '''
         t[0] = t[1]
+#        print(t[0][0].op)
 
     def p_or_rule(self,p):
         '''
@@ -84,6 +90,7 @@ class Parser :
         r.extend(t[3])
         t[0] = r
 
+
     def p_rule_or_not(self,p):
         '''
         rule_or_not : rule
@@ -94,6 +101,7 @@ class Parser :
             p[0] = p[2]
         except IndexError:
             p[0] = p[1]
+
 
     def p_rule(self,t):
         '''
@@ -111,11 +119,13 @@ class Parser :
             dt=ps
         for op in p[2]:
             opt = op
-        print(p[0])
+        #print(p[0])
         rdt=datatype_mappings[self.entities[dt]]
-        fl=FilterRule(dt,p[3],rdt,0,opt)
+        operator=datatype_mappings[opt]
+        fl=FilterRule(dt,p[3][0],rdt,0,operator)
         self.filterRules.append(fl)
         p[1].extend(p[3])
+        p[0]=fl
 
     def p_op(self,p):
         '''
@@ -129,7 +139,7 @@ class Parser :
            | inKeyword
            | notinKeyword
         '''
-        p[0] = p[1] #lineno
+        p[0] = [p[1]] #lineno
 
     def p_rule_prefix(self,p):
         '''
@@ -139,7 +149,7 @@ class Parser :
         '''
         p[0] = Rule(p[1], p.lineno(1), p[3])
 
-    def p_args(self,p):
+    def p_args(self,p):#TODO
         '''
         args : arg ',' args
         '''
@@ -176,7 +186,7 @@ class Parser :
 
 
     def p_error(self,p):
-        print("Syntax error at input!")
+        print("Syntax error at input line %s"%p.lineno)
 
     def Parse(self, data):
         #self.Error = False  tracking=True, debug=1, parse
@@ -190,7 +200,10 @@ class Parser :
 
 if __name__ == "__main__":
     parsr = Parser()
-    tests=['filter v4 { sourceIPv4Address = 18.0.0.1}','filter v6 {sourceIPv6Address=::1}','filter off{fragmentOffset=8}']
+    #tests=['filter v4 { sourceIPv4Address = 18.0.0.1}','filter v6 {sourceIPv6Address=::1}','filter off{fragmentOffset=8}']
+    tests=["""filter v3{sourceIPv4Address=18.0.0.255 OR  sourceIPv6Address>=::192.168.1.190
+     sourceIPv6Address>=::1
+               }"""]
     #try:
         #s = input('debug > ') # Use raw_input on Python 2
     #except EOFError:
@@ -198,17 +211,22 @@ if __name__ == "__main__":
     for test in tests:
         parsr.Parse(test)
     lst=[]
-    for pr in parsr.filterRules:
-        print(vars(pr))
-        lst.append({'term':vars(pr)})
-    clause={'clause':lst}
-    filter={'dnf-expr':[clause]}
     branchset=[]
-    branchset.append({'filter':filter})
+    for fl in parsr.filters:
+        #print(vars(pr))
+        for frule in fl.br_mask:
+            for r in frule:
+                lst.append({'term':vars(r)})
+        clause={'clause':lst}
+        filter={'dnf-expr':[clause]}
+        branchset.append({'filter':filter})
+
     query={'branchset':branchset,'grouper':{},'ungrouper':{}}
     fjson = json.dumps(query, indent=2)
     file = open('query-session.json', 'w')
     file.write(fjson)
     file.close
+
+    
 
 
