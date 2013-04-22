@@ -1,0 +1,4 @@
+filter v3{sourceIPv4Address=18.0.0.255 OR  sourceIPv6Address>=::192.168.1.190
+     sourceIPv6Address>=::1 OR sourceIPv4Address=0.0.0.0
+     sourceTransportPort=1431
+               }
