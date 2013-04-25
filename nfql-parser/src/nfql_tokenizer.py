@@ -20,6 +20,7 @@ class Tokenizer:
         'OR': 'ORKeyword',
         'NOT': 'NOTKeyword',
         'bitOR': 'bitORKeyword',
+        'delta':'deltaKeyword',
         'bitAND': 'bitANDKeyword',
     }
     literals = "+-*/(){},."

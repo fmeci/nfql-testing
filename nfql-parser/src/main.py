@@ -8,16 +8,6 @@ from nfql_parser import *
 import shutil
 if __name__ == "__main__":
 
-    #tests=['filter v4 { sourceIPv4Address = 18.0.0.1}','filter v6 {sourceIPv6Address=::1}','filter off{fragmentOffset=8}']
-    #tests=["""filter v3{sourceIPv4Address=18.0.0.255 OR  sourceIPv6Address>=::192.168.1.190
-    # sourceIPv6Address>=::1 OR sourceIPv4Address=0.0.0.0
-    # sourceTransportPort=143
-    #           }"""]
-    #try:
-        #s = input('debug > ') # Use raw_input on Python 2
-    #except EOFError:
-    #    pass
-
     files = len(sys.argv)
     for i in range(files):
         exists=True
@@ -42,12 +32,16 @@ if __name__ == "__main__":
                             lst.append({'term': vars(r)})
                         clause.append({'clause': lst})
                         lst = []
-                    filter = {'dnf-expr': [clause]}
+                    filter = {'dnf-expr': clause}
                     branchset.append({'filter': filter})
+                    filter=[]
+
 				
-                query = {'branchset': branchset, 'grouper': {}, 'ungrouper': {}}
+                query = {'branchset': branchset,'ungrouper': {}}
                 fjson = json.dumps(query, indent=2)
                 file = open('%s.json'%inp.name[:-4], 'w')
-                file.write(fjson)
+                assert file.write(fjson)
 				
                 file.close
+
+

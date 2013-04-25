@@ -43,6 +43,20 @@ class Parser :
     filterRules=[]
     xml=[]
     entities={}
+    def p_pipeline_stage_1n(self,p):
+        'pipeline_stage_1n : pipeline_stage pipeline_stage_1n'
+        # add a name mapping:
+        p[0]=p[1]
+
+    def p_pipeline_stage_end(self,p):
+        'pipeline_stage_1n :'
+
+    def p_pipeline_stage(self,p):
+        '''
+        pipeline_stage : filter
+        '''
+
+        p[0] = p[1]
     def p_filter(self,p):
         '''
         filter : filterKeyword id '{' filter_rule_1n '}'
@@ -110,7 +124,43 @@ class Parser :
              | prefix_rule
         '''
         t[0] = t[1]
+    def p_delta_rule(self,p):
+        'infix_rule : arg_names op arg deltaKeyword EQ int'
+        dt = p[1][0]
+        opt = p[2][0]
+        if (self.entities[dt] == 'unsigned8'):
+            if (len('{0:08b}'.format(int(p[3][0]))) <= 8):
+                pass
+            else:
+                print('Value out of range at line %s: 8bit' % p.lineno(1))
+                exit(-1)
+        elif (self.entities[dt] == 'unsigned16'):
+            if (len('{0:08b}'.format(int(p[3][0]))) <= 16):
+                pass
+            else:
+                print('Value out of range at line %s: 16bit' % p.lineno(1))
+                exit(-1)
+        elif (self.entities[dt] == 'unsigned32'):
+            if (len('{0:08b}'.format(int(p[3][0]))) <= 32):
+                pass
+            else:
+                print('Value out of range at line %s: 32bit' % p.lineno(1))
+                exit(-1)
+        elif (self.entities[dt] == 'unsigned64'):
+            if (len('{0:08b}'.format(int(p[3][0]))) <= 64):
+                pass
+            else:
+                print('Value out of range at line %s: 64bit' % p.lineno(1))
+                exit(-1)
 
+                #print('Value out of range at line %s')
+        rdt = datatype_mappings[self.entities[dt]]
+
+        operator = datatype_mappings[opt]
+        fl = FilterRule(dt, p[3][0], rdt, int(p[6]), operator)
+        self.filterRules.append(fl)
+        p[1].extend(p[3])
+        p[0] = fl
     def p_infix_rule(self,p):
         'infix_rule : arg_names op arg'
         dt=p[1][0]
@@ -190,13 +240,14 @@ class Parser :
             | CIDR
             | MAC
             | int
-            | prefix_rule
+
         '''
         p[0] = [p[1]]
 
     def p_arg_names(self,p):
         '''
         arg_names : id
+                    | prefix_rule
         '''
         p[0]=[p[1]]
     def p_cidr(self,p):
@@ -220,54 +271,4 @@ class Parser :
         self.entities=Tokenizer.entities
         return yacc.parse(data,tracking=True,lexer=lexer)
 
-'''
-if __name__ == "__main__":
 
-    #tests=['filter v4 { sourceIPv4Address = 18.0.0.1}','filter v6 {sourceIPv6Address=::1}','filter off{fragmentOffset=8}']
-    tests=["""filter v3{sourceIPv4Address=18.0.0.255 OR  sourceIPv6Address>=::192.168.1.190
-     sourceIPv6Address>=::1 OR sourceIPv4Address=0.0.0.0
-     sourceTransportPort=143
-               }"""]
-    #try:
-        #s = input('debug > ') # Use raw_input on Python 2
-    #except EOFError:
-    #    pass
-
-    files = len(sys.argv)
-    for i in range(files):
-        exists=True
-        if(i!=0):
-            try:
-                inp = open((sys.argv[i]))
-            except IOError:
-                print('Error opening file %s'%str(sys.argv[i]))
-                exists=False
-            if(exists):
-                parsr = Parser()
-                parsr.Parse(inp.read())
-                branchset = []
-                for fl in parsr.filters:
-                    rules = []
-                    lst = []
-                    clause = []
-                    for frule in fl.br_mask:
-                        rules.append(frule)
-                    for rule in list(itertools.product(*rules)):
-                        for r in rule:
-                            lst.append({'term': vars(r)})
-                        clause.append({'clause': lst})
-                        lst = []
-                    filter = {'dnf-expr': [clause]}
-                    branchset.append({'filter': filter})
-
-                query = {'branchset': branchset, 'grouper': {}, 'ungrouper': {}}
-                fjson = json.dumps(query, indent=2)
-                file = open('%s.json'%inp.name[:-4], 'w')
-                file.write(fjson)
-                file.close
-    #txt = open(argv[1])
-    #print(txt.read())
-    #for test in tests:
-        #parsr.Parse(test)
-
-'''
