@@ -1,0 +1,69 @@
+{
+  "branchset": [
+    {
+      "filter": {
+        "dnf-expr": [
+          {
+            "clause": [
+              {
+                "term": {
+                  "offset": {
+                    "datatype": "RULE_S1_8", 
+                    "name": "protocolIdentifier", 
+                    "value": 6
+                  }, 
+                  "op": "RULE_EQ", 
+                  "delta": 0
+                }
+              }, 
+              {
+                "term": {
+                  "offset": {
+                    "datatype": "RULE_S1_16", 
+                    "name": "tcpSourcePort", 
+                    "value": 443
+                  }, 
+                  "op": "RULE_EQ", 
+                  "delta": 0
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }, 
+    {
+      "filter": {
+        "dnf-expr": [
+          {
+            "clause": [
+              {
+                "term": {
+                  "offset": {
+                    "datatype": "RULE_S1_8", 
+                    "name": "protocolIdentifier", 
+                    "value": 6
+                  }, 
+                  "op": "RULE_EQ", 
+                  "delta": 0
+                }
+              }, 
+              {
+                "term": {
+                  "offset": {
+                    "datatype": "RULE_S1_16", 
+                    "name": "tcpDestinationPort", 
+                    "value": 443
+                  }, 
+                  "op": "RULE_EQ", 
+                  "delta": 0
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ], 
+  "ungrouper": {}
+}

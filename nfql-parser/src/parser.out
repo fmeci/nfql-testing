@@ -1,0 +1,861 @@
+Created by PLY version 3.4 (http://www.dabeaz.com/ply)
+
+Grammar
+
+Rule 0     S' -> pipeline_stage_1n
+Rule 1     pipeline_stage_1n -> pipeline_stage newline pipeline_stage_1n
+Rule 2     pipeline_stage_1n -> <empty>
+Rule 3     pipeline_stage -> filter
+Rule 4     filter -> filterKeyword id { filter_rule_1n }
+Rule 5     filter_rule_1n -> filter_rule newline filter_rule_1n
+Rule 6     filter_rule_1n -> <empty>
+Rule 7     filter_rule -> or_rule
+Rule 8     or_rule -> rule_or_not opt_rule
+Rule 9     opt_rule -> <empty>
+Rule 10    opt_rule -> ORKeyword rule_or_not opt_rule
+Rule 11    rule_or_not -> rule
+Rule 12    rule_or_not -> NOTKeyword rule
+Rule 13    rule -> infix_rule
+Rule 14    rule -> prefix_rule
+Rule 15    infix_rule -> arg_names op arg deltaKeyword EQ int
+Rule 16    infix_rule -> arg_names op arg
+Rule 17    op -> EQ
+Rule 18    op -> LT
+Rule 19    op -> GT
+Rule 20    op -> LTEQ
+Rule 21    op -> GTEQ
+Rule 22    op -> ML
+Rule 23    op -> MG
+Rule 24    op -> inKeyword
+Rule 25    op -> notinKeyword
+Rule 26    prefix_rule -> id ( args )
+Rule 27    prefix_rule -> bitANDKeyword ( args )
+Rule 28    prefix_rule -> bitORKeyword ( args )
+Rule 29    args -> arg , args
+Rule 30    args -> <empty>
+Rule 31    arg -> IPv6
+Rule 32    arg -> IPv4
+Rule 33    arg -> CIDR
+Rule 34    arg -> MAC
+Rule 35    arg -> int
+Rule 36    arg_names -> id
+Rule 37    arg_names -> prefix_rule
+Rule 38    CIDR -> IPv4 / int
+Rule 39    CIDR -> IPv6 / int
+
+Terminals, with rules where they appear
+
+(                    : 26 27 28
+)                    : 26 27 28
+,                    : 29
+/                    : 38 39
+EQ                   : 15 17
+GT                   : 19
+GTEQ                 : 21
+IPv4                 : 32 38
+IPv6                 : 31 39
+LT                   : 18
+LTEQ                 : 20
+MAC                  : 34
+MG                   : 23
+ML                   : 22
+NOTKeyword           : 12
+ORKeyword            : 10
+bitANDKeyword        : 27
+bitORKeyword         : 28
+deltaKeyword         : 15
+error                : 
+filterKeyword        : 4
+id                   : 4 26 36
+inKeyword            : 24
+int                  : 15 35 38 39
+newline              : 1 5
+notinKeyword         : 25
+{                    : 4
+}                    : 4
+
+Nonterminals, with rules where they appear
+
+CIDR                 : 33
+arg                  : 15 16 29
+arg_names            : 15 16
+args                 : 26 27 28 29
+filter               : 3
+filter_rule          : 5
+filter_rule_1n       : 4 5
+infix_rule           : 13
+op                   : 15 16
+opt_rule             : 8 10
+or_rule              : 7
+pipeline_stage       : 1
+pipeline_stage_1n    : 1 0
+prefix_rule          : 14 37
+rule                 : 11 12
+rule_or_not          : 8 10
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . pipeline_stage_1n
+    (1) pipeline_stage_1n -> . pipeline_stage newline pipeline_stage_1n
+    (2) pipeline_stage_1n -> .
+    (3) pipeline_stage -> . filter
+    (4) filter -> . filterKeyword id { filter_rule_1n }
+
+    $end            reduce using rule 2 (pipeline_stage_1n -> .)
+    filterKeyword   shift and go to state 1
+
+    pipeline_stage_1n              shift and go to state 2
+    pipeline_stage                 shift and go to state 3
+    filter                         shift and go to state 4
+
+state 1
+
+    (4) filter -> filterKeyword . id { filter_rule_1n }
+
+    id              shift and go to state 5
+
+
+state 2
+
+    (0) S' -> pipeline_stage_1n .
+
+
+
+state 3
+
+    (1) pipeline_stage_1n -> pipeline_stage . newline pipeline_stage_1n
+
+    newline         shift and go to state 6
+
+
+state 4
+
+    (3) pipeline_stage -> filter .
+
+    newline         reduce using rule 3 (pipeline_stage -> filter .)
+
+
+state 5
+
+    (4) filter -> filterKeyword id . { filter_rule_1n }
+
+    {               shift and go to state 7
+
+
+state 6
+
+    (1) pipeline_stage_1n -> pipeline_stage newline . pipeline_stage_1n
+    (1) pipeline_stage_1n -> . pipeline_stage newline pipeline_stage_1n
+    (2) pipeline_stage_1n -> .
+    (3) pipeline_stage -> . filter
+    (4) filter -> . filterKeyword id { filter_rule_1n }
+
+    $end            reduce using rule 2 (pipeline_stage_1n -> .)
+    filterKeyword   shift and go to state 1
+
+    pipeline_stage_1n              shift and go to state 8
+    pipeline_stage                 shift and go to state 3
+    filter                         shift and go to state 4
+
+state 7
+
+    (4) filter -> filterKeyword id { . filter_rule_1n }
+    (5) filter_rule_1n -> . filter_rule newline filter_rule_1n
+    (6) filter_rule_1n -> .
+    (7) filter_rule -> . or_rule
+    (8) or_rule -> . rule_or_not opt_rule
+    (11) rule_or_not -> . rule
+    (12) rule_or_not -> . NOTKeyword rule
+    (13) rule -> . infix_rule
+    (14) rule -> . prefix_rule
+    (15) infix_rule -> . arg_names op arg deltaKeyword EQ int
+    (16) infix_rule -> . arg_names op arg
+    (26) prefix_rule -> . id ( args )
+    (27) prefix_rule -> . bitANDKeyword ( args )
+    (28) prefix_rule -> . bitORKeyword ( args )
+    (36) arg_names -> . id
+    (37) arg_names -> . prefix_rule
+
+    }               reduce using rule 6 (filter_rule_1n -> .)
+    NOTKeyword      shift and go to state 19
+    id              shift and go to state 14
+    bitANDKeyword   shift and go to state 18
+    bitORKeyword    shift and go to state 13
+
+    infix_rule                     shift and go to state 20
+    arg_names                      shift and go to state 9
+    rule_or_not                    shift and go to state 15
+    or_rule                        shift and go to state 16
+    rule                           shift and go to state 17
+    prefix_rule                    shift and go to state 12
+    filter_rule                    shift and go to state 10
+    filter_rule_1n                 shift and go to state 11
+
+state 8
+
+    (1) pipeline_stage_1n -> pipeline_stage newline pipeline_stage_1n .
+
+    $end            reduce using rule 1 (pipeline_stage_1n -> pipeline_stage newline pipeline_stage_1n .)
+
+
+state 9
+
+    (15) infix_rule -> arg_names . op arg deltaKeyword EQ int
+    (16) infix_rule -> arg_names . op arg
+    (17) op -> . EQ
+    (18) op -> . LT
+    (19) op -> . GT
+    (20) op -> . LTEQ
+    (21) op -> . GTEQ
+    (22) op -> . ML
+    (23) op -> . MG
+    (24) op -> . inKeyword
+    (25) op -> . notinKeyword
+
+    EQ              shift and go to state 23
+    LT              shift and go to state 26
+    GT              shift and go to state 22
+    LTEQ            shift and go to state 29
+    GTEQ            shift and go to state 25
+    ML              shift and go to state 21
+    MG              shift and go to state 24
+    inKeyword       shift and go to state 27
+    notinKeyword    shift and go to state 28
+
+    op                             shift and go to state 30
+
+state 10
+
+    (5) filter_rule_1n -> filter_rule . newline filter_rule_1n
+
+    newline         shift and go to state 31
+
+
+state 11
+
+    (4) filter -> filterKeyword id { filter_rule_1n . }
+
+    }               shift and go to state 32
+
+
+state 12
+
+    (14) rule -> prefix_rule .
+    (37) arg_names -> prefix_rule .
+
+    ORKeyword       reduce using rule 14 (rule -> prefix_rule .)
+    newline         reduce using rule 14 (rule -> prefix_rule .)
+    EQ              reduce using rule 37 (arg_names -> prefix_rule .)
+    LT              reduce using rule 37 (arg_names -> prefix_rule .)
+    GT              reduce using rule 37 (arg_names -> prefix_rule .)
+    LTEQ            reduce using rule 37 (arg_names -> prefix_rule .)
+    GTEQ            reduce using rule 37 (arg_names -> prefix_rule .)
+    ML              reduce using rule 37 (arg_names -> prefix_rule .)
+    MG              reduce using rule 37 (arg_names -> prefix_rule .)
+    inKeyword       reduce using rule 37 (arg_names -> prefix_rule .)
+    notinKeyword    reduce using rule 37 (arg_names -> prefix_rule .)
+
+
+state 13
+
+    (28) prefix_rule -> bitORKeyword . ( args )
+
+    (               shift and go to state 33
+
+
+state 14
+
+    (26) prefix_rule -> id . ( args )
+    (36) arg_names -> id .
+
+    (               shift and go to state 34
+    EQ              reduce using rule 36 (arg_names -> id .)
+    LT              reduce using rule 36 (arg_names -> id .)
+    GT              reduce using rule 36 (arg_names -> id .)
+    LTEQ            reduce using rule 36 (arg_names -> id .)
+    GTEQ            reduce using rule 36 (arg_names -> id .)
+    ML              reduce using rule 36 (arg_names -> id .)
+    MG              reduce using rule 36 (arg_names -> id .)
+    inKeyword       reduce using rule 36 (arg_names -> id .)
+    notinKeyword    reduce using rule 36 (arg_names -> id .)
+
+
+state 15
+
+    (8) or_rule -> rule_or_not . opt_rule
+    (9) opt_rule -> .
+    (10) opt_rule -> . ORKeyword rule_or_not opt_rule
+
+    newline         reduce using rule 9 (opt_rule -> .)
+    ORKeyword       shift and go to state 35
+
+    opt_rule                       shift and go to state 36
+
+state 16
+
+    (7) filter_rule -> or_rule .
+
+    newline         reduce using rule 7 (filter_rule -> or_rule .)
+
+
+state 17
+
+    (11) rule_or_not -> rule .
+
+    ORKeyword       reduce using rule 11 (rule_or_not -> rule .)
+    newline         reduce using rule 11 (rule_or_not -> rule .)
+
+
+state 18
+
+    (27) prefix_rule -> bitANDKeyword . ( args )
+
+    (               shift and go to state 37
+
+
+state 19
+
+    (12) rule_or_not -> NOTKeyword . rule
+    (13) rule -> . infix_rule
+    (14) rule -> . prefix_rule
+    (15) infix_rule -> . arg_names op arg deltaKeyword EQ int
+    (16) infix_rule -> . arg_names op arg
+    (26) prefix_rule -> . id ( args )
+    (27) prefix_rule -> . bitANDKeyword ( args )
+    (28) prefix_rule -> . bitORKeyword ( args )
+    (36) arg_names -> . id
+    (37) arg_names -> . prefix_rule
+
+    id              shift and go to state 14
+    bitANDKeyword   shift and go to state 18
+    bitORKeyword    shift and go to state 13
+
+    rule                           shift and go to state 38
+    prefix_rule                    shift and go to state 12
+    arg_names                      shift and go to state 9
+    infix_rule                     shift and go to state 20
+
+state 20
+
+    (13) rule -> infix_rule .
+
+    ORKeyword       reduce using rule 13 (rule -> infix_rule .)
+    newline         reduce using rule 13 (rule -> infix_rule .)
+
+
+state 21
+
+    (22) op -> ML .
+
+    IPv6            reduce using rule 22 (op -> ML .)
+    IPv4            reduce using rule 22 (op -> ML .)
+    MAC             reduce using rule 22 (op -> ML .)
+    int             reduce using rule 22 (op -> ML .)
+
+
+state 22
+
+    (19) op -> GT .
+
+    IPv6            reduce using rule 19 (op -> GT .)
+    IPv4            reduce using rule 19 (op -> GT .)
+    MAC             reduce using rule 19 (op -> GT .)
+    int             reduce using rule 19 (op -> GT .)
+
+
+state 23
+
+    (17) op -> EQ .
+
+    IPv6            reduce using rule 17 (op -> EQ .)
+    IPv4            reduce using rule 17 (op -> EQ .)
+    MAC             reduce using rule 17 (op -> EQ .)
+    int             reduce using rule 17 (op -> EQ .)
+
+
+state 24
+
+    (23) op -> MG .
+
+    IPv6            reduce using rule 23 (op -> MG .)
+    IPv4            reduce using rule 23 (op -> MG .)
+    MAC             reduce using rule 23 (op -> MG .)
+    int             reduce using rule 23 (op -> MG .)
+
+
+state 25
+
+    (21) op -> GTEQ .
+
+    IPv6            reduce using rule 21 (op -> GTEQ .)
+    IPv4            reduce using rule 21 (op -> GTEQ .)
+    MAC             reduce using rule 21 (op -> GTEQ .)
+    int             reduce using rule 21 (op -> GTEQ .)
+
+
+state 26
+
+    (18) op -> LT .
+
+    IPv6            reduce using rule 18 (op -> LT .)
+    IPv4            reduce using rule 18 (op -> LT .)
+    MAC             reduce using rule 18 (op -> LT .)
+    int             reduce using rule 18 (op -> LT .)
+
+
+state 27
+
+    (24) op -> inKeyword .
+
+    IPv6            reduce using rule 24 (op -> inKeyword .)
+    IPv4            reduce using rule 24 (op -> inKeyword .)
+    MAC             reduce using rule 24 (op -> inKeyword .)
+    int             reduce using rule 24 (op -> inKeyword .)
+
+
+state 28
+
+    (25) op -> notinKeyword .
+
+    IPv6            reduce using rule 25 (op -> notinKeyword .)
+    IPv4            reduce using rule 25 (op -> notinKeyword .)
+    MAC             reduce using rule 25 (op -> notinKeyword .)
+    int             reduce using rule 25 (op -> notinKeyword .)
+
+
+state 29
+
+    (20) op -> LTEQ .
+
+    IPv6            reduce using rule 20 (op -> LTEQ .)
+    IPv4            reduce using rule 20 (op -> LTEQ .)
+    MAC             reduce using rule 20 (op -> LTEQ .)
+    int             reduce using rule 20 (op -> LTEQ .)
+
+
+state 30
+
+    (15) infix_rule -> arg_names op . arg deltaKeyword EQ int
+    (16) infix_rule -> arg_names op . arg
+    (31) arg -> . IPv6
+    (32) arg -> . IPv4
+    (33) arg -> . CIDR
+    (34) arg -> . MAC
+    (35) arg -> . int
+    (38) CIDR -> . IPv4 / int
+    (39) CIDR -> . IPv6 / int
+
+    IPv6            shift and go to state 41
+    IPv4            shift and go to state 40
+    MAC             shift and go to state 44
+    int             shift and go to state 43
+
+    CIDR                           shift and go to state 39
+    arg                            shift and go to state 42
+
+state 31
+
+    (5) filter_rule_1n -> filter_rule newline . filter_rule_1n
+    (5) filter_rule_1n -> . filter_rule newline filter_rule_1n
+    (6) filter_rule_1n -> .
+    (7) filter_rule -> . or_rule
+    (8) or_rule -> . rule_or_not opt_rule
+    (11) rule_or_not -> . rule
+    (12) rule_or_not -> . NOTKeyword rule
+    (13) rule -> . infix_rule
+    (14) rule -> . prefix_rule
+    (15) infix_rule -> . arg_names op arg deltaKeyword EQ int
+    (16) infix_rule -> . arg_names op arg
+    (26) prefix_rule -> . id ( args )
+    (27) prefix_rule -> . bitANDKeyword ( args )
+    (28) prefix_rule -> . bitORKeyword ( args )
+    (36) arg_names -> . id
+    (37) arg_names -> . prefix_rule
+
+    }               reduce using rule 6 (filter_rule_1n -> .)
+    NOTKeyword      shift and go to state 19
+    id              shift and go to state 14
+    bitANDKeyword   shift and go to state 18
+    bitORKeyword    shift and go to state 13
+
+    infix_rule                     shift and go to state 20
+    arg_names                      shift and go to state 9
+    rule_or_not                    shift and go to state 15
+    or_rule                        shift and go to state 16
+    rule                           shift and go to state 17
+    prefix_rule                    shift and go to state 12
+    filter_rule                    shift and go to state 10
+    filter_rule_1n                 shift and go to state 45
+
+state 32
+
+    (4) filter -> filterKeyword id { filter_rule_1n } .
+
+    newline         reduce using rule 4 (filter -> filterKeyword id { filter_rule_1n } .)
+
+
+state 33
+
+    (28) prefix_rule -> bitORKeyword ( . args )
+    (29) args -> . arg , args
+    (30) args -> .
+    (31) arg -> . IPv6
+    (32) arg -> . IPv4
+    (33) arg -> . CIDR
+    (34) arg -> . MAC
+    (35) arg -> . int
+    (38) CIDR -> . IPv4 / int
+    (39) CIDR -> . IPv6 / int
+
+    )               reduce using rule 30 (args -> .)
+    IPv6            shift and go to state 41
+    IPv4            shift and go to state 40
+    MAC             shift and go to state 44
+    int             shift and go to state 43
+
+    arg                            shift and go to state 46
+    CIDR                           shift and go to state 39
+    args                           shift and go to state 47
+
+state 34
+
+    (26) prefix_rule -> id ( . args )
+    (29) args -> . arg , args
+    (30) args -> .
+    (31) arg -> . IPv6
+    (32) arg -> . IPv4
+    (33) arg -> . CIDR
+    (34) arg -> . MAC
+    (35) arg -> . int
+    (38) CIDR -> . IPv4 / int
+    (39) CIDR -> . IPv6 / int
+
+    )               reduce using rule 30 (args -> .)
+    IPv6            shift and go to state 41
+    IPv4            shift and go to state 40
+    MAC             shift and go to state 44
+    int             shift and go to state 43
+
+    arg                            shift and go to state 46
+    CIDR                           shift and go to state 39
+    args                           shift and go to state 48
+
+state 35
+
+    (10) opt_rule -> ORKeyword . rule_or_not opt_rule
+    (11) rule_or_not -> . rule
+    (12) rule_or_not -> . NOTKeyword rule
+    (13) rule -> . infix_rule
+    (14) rule -> . prefix_rule
+    (15) infix_rule -> . arg_names op arg deltaKeyword EQ int
+    (16) infix_rule -> . arg_names op arg
+    (26) prefix_rule -> . id ( args )
+    (27) prefix_rule -> . bitANDKeyword ( args )
+    (28) prefix_rule -> . bitORKeyword ( args )
+    (36) arg_names -> . id
+    (37) arg_names -> . prefix_rule
+
+    NOTKeyword      shift and go to state 19
+    id              shift and go to state 14
+    bitANDKeyword   shift and go to state 18
+    bitORKeyword    shift and go to state 13
+
+    rule                           shift and go to state 17
+    prefix_rule                    shift and go to state 12
+    rule_or_not                    shift and go to state 49
+    arg_names                      shift and go to state 9
+    infix_rule                     shift and go to state 20
+
+state 36
+
+    (8) or_rule -> rule_or_not opt_rule .
+
+    newline         reduce using rule 8 (or_rule -> rule_or_not opt_rule .)
+
+
+state 37
+
+    (27) prefix_rule -> bitANDKeyword ( . args )
+    (29) args -> . arg , args
+    (30) args -> .
+    (31) arg -> . IPv6
+    (32) arg -> . IPv4
+    (33) arg -> . CIDR
+    (34) arg -> . MAC
+    (35) arg -> . int
+    (38) CIDR -> . IPv4 / int
+    (39) CIDR -> . IPv6 / int
+
+    )               reduce using rule 30 (args -> .)
+    IPv6            shift and go to state 41
+    IPv4            shift and go to state 40
+    MAC             shift and go to state 44
+    int             shift and go to state 43
+
+    arg                            shift and go to state 46
+    CIDR                           shift and go to state 39
+    args                           shift and go to state 50
+
+state 38
+
+    (12) rule_or_not -> NOTKeyword rule .
+
+    ORKeyword       reduce using rule 12 (rule_or_not -> NOTKeyword rule .)
+    newline         reduce using rule 12 (rule_or_not -> NOTKeyword rule .)
+
+
+state 39
+
+    (33) arg -> CIDR .
+
+    ,               reduce using rule 33 (arg -> CIDR .)
+    deltaKeyword    reduce using rule 33 (arg -> CIDR .)
+    ORKeyword       reduce using rule 33 (arg -> CIDR .)
+    newline         reduce using rule 33 (arg -> CIDR .)
+
+
+state 40
+
+    (32) arg -> IPv4 .
+    (38) CIDR -> IPv4 . / int
+
+    ,               reduce using rule 32 (arg -> IPv4 .)
+    deltaKeyword    reduce using rule 32 (arg -> IPv4 .)
+    ORKeyword       reduce using rule 32 (arg -> IPv4 .)
+    newline         reduce using rule 32 (arg -> IPv4 .)
+    /               shift and go to state 51
+
+
+state 41
+
+    (31) arg -> IPv6 .
+    (39) CIDR -> IPv6 . / int
+
+    ,               reduce using rule 31 (arg -> IPv6 .)
+    deltaKeyword    reduce using rule 31 (arg -> IPv6 .)
+    ORKeyword       reduce using rule 31 (arg -> IPv6 .)
+    newline         reduce using rule 31 (arg -> IPv6 .)
+    /               shift and go to state 52
+
+
+state 42
+
+    (15) infix_rule -> arg_names op arg . deltaKeyword EQ int
+    (16) infix_rule -> arg_names op arg .
+
+    deltaKeyword    shift and go to state 53
+    ORKeyword       reduce using rule 16 (infix_rule -> arg_names op arg .)
+    newline         reduce using rule 16 (infix_rule -> arg_names op arg .)
+
+
+state 43
+
+    (35) arg -> int .
+
+    ,               reduce using rule 35 (arg -> int .)
+    deltaKeyword    reduce using rule 35 (arg -> int .)
+    ORKeyword       reduce using rule 35 (arg -> int .)
+    newline         reduce using rule 35 (arg -> int .)
+
+
+state 44
+
+    (34) arg -> MAC .
+
+    ,               reduce using rule 34 (arg -> MAC .)
+    deltaKeyword    reduce using rule 34 (arg -> MAC .)
+    ORKeyword       reduce using rule 34 (arg -> MAC .)
+    newline         reduce using rule 34 (arg -> MAC .)
+
+
+state 45
+
+    (5) filter_rule_1n -> filter_rule newline filter_rule_1n .
+
+    }               reduce using rule 5 (filter_rule_1n -> filter_rule newline filter_rule_1n .)
+
+
+state 46
+
+    (29) args -> arg . , args
+
+    ,               shift and go to state 54
+
+
+state 47
+
+    (28) prefix_rule -> bitORKeyword ( args . )
+
+    )               shift and go to state 55
+
+
+state 48
+
+    (26) prefix_rule -> id ( args . )
+
+    )               shift and go to state 56
+
+
+state 49
+
+    (10) opt_rule -> ORKeyword rule_or_not . opt_rule
+    (9) opt_rule -> .
+    (10) opt_rule -> . ORKeyword rule_or_not opt_rule
+
+    newline         reduce using rule 9 (opt_rule -> .)
+    ORKeyword       shift and go to state 35
+
+    opt_rule                       shift and go to state 57
+
+state 50
+
+    (27) prefix_rule -> bitANDKeyword ( args . )
+
+    )               shift and go to state 58
+
+
+state 51
+
+    (38) CIDR -> IPv4 / . int
+
+    int             shift and go to state 59
+
+
+state 52
+
+    (39) CIDR -> IPv6 / . int
+
+    int             shift and go to state 60
+
+
+state 53
+
+    (15) infix_rule -> arg_names op arg deltaKeyword . EQ int
+
+    EQ              shift and go to state 61
+
+
+state 54
+
+    (29) args -> arg , . args
+    (29) args -> . arg , args
+    (30) args -> .
+    (31) arg -> . IPv6
+    (32) arg -> . IPv4
+    (33) arg -> . CIDR
+    (34) arg -> . MAC
+    (35) arg -> . int
+    (38) CIDR -> . IPv4 / int
+    (39) CIDR -> . IPv6 / int
+
+    )               reduce using rule 30 (args -> .)
+    IPv6            shift and go to state 41
+    IPv4            shift and go to state 40
+    MAC             shift and go to state 44
+    int             shift and go to state 43
+
+    arg                            shift and go to state 46
+    CIDR                           shift and go to state 39
+    args                           shift and go to state 62
+
+state 55
+
+    (28) prefix_rule -> bitORKeyword ( args ) .
+
+    ORKeyword       reduce using rule 28 (prefix_rule -> bitORKeyword ( args ) .)
+    newline         reduce using rule 28 (prefix_rule -> bitORKeyword ( args ) .)
+    EQ              reduce using rule 28 (prefix_rule -> bitORKeyword ( args ) .)
+    LT              reduce using rule 28 (prefix_rule -> bitORKeyword ( args ) .)
+    GT              reduce using rule 28 (prefix_rule -> bitORKeyword ( args ) .)
+    LTEQ            reduce using rule 28 (prefix_rule -> bitORKeyword ( args ) .)
+    GTEQ            reduce using rule 28 (prefix_rule -> bitORKeyword ( args ) .)
+    ML              reduce using rule 28 (prefix_rule -> bitORKeyword ( args ) .)
+    MG              reduce using rule 28 (prefix_rule -> bitORKeyword ( args ) .)
+    inKeyword       reduce using rule 28 (prefix_rule -> bitORKeyword ( args ) .)
+    notinKeyword    reduce using rule 28 (prefix_rule -> bitORKeyword ( args ) .)
+
+
+state 56
+
+    (26) prefix_rule -> id ( args ) .
+
+    ORKeyword       reduce using rule 26 (prefix_rule -> id ( args ) .)
+    newline         reduce using rule 26 (prefix_rule -> id ( args ) .)
+    EQ              reduce using rule 26 (prefix_rule -> id ( args ) .)
+    LT              reduce using rule 26 (prefix_rule -> id ( args ) .)
+    GT              reduce using rule 26 (prefix_rule -> id ( args ) .)
+    LTEQ            reduce using rule 26 (prefix_rule -> id ( args ) .)
+    GTEQ            reduce using rule 26 (prefix_rule -> id ( args ) .)
+    ML              reduce using rule 26 (prefix_rule -> id ( args ) .)
+    MG              reduce using rule 26 (prefix_rule -> id ( args ) .)
+    inKeyword       reduce using rule 26 (prefix_rule -> id ( args ) .)
+    notinKeyword    reduce using rule 26 (prefix_rule -> id ( args ) .)
+
+
+state 57
+
+    (10) opt_rule -> ORKeyword rule_or_not opt_rule .
+
+    newline         reduce using rule 10 (opt_rule -> ORKeyword rule_or_not opt_rule .)
+
+
+state 58
+
+    (27) prefix_rule -> bitANDKeyword ( args ) .
+
+    ORKeyword       reduce using rule 27 (prefix_rule -> bitANDKeyword ( args ) .)
+    newline         reduce using rule 27 (prefix_rule -> bitANDKeyword ( args ) .)
+    EQ              reduce using rule 27 (prefix_rule -> bitANDKeyword ( args ) .)
+    LT              reduce using rule 27 (prefix_rule -> bitANDKeyword ( args ) .)
+    GT              reduce using rule 27 (prefix_rule -> bitANDKeyword ( args ) .)
+    LTEQ            reduce using rule 27 (prefix_rule -> bitANDKeyword ( args ) .)
+    GTEQ            reduce using rule 27 (prefix_rule -> bitANDKeyword ( args ) .)
+    ML              reduce using rule 27 (prefix_rule -> bitANDKeyword ( args ) .)
+    MG              reduce using rule 27 (prefix_rule -> bitANDKeyword ( args ) .)
+    inKeyword       reduce using rule 27 (prefix_rule -> bitANDKeyword ( args ) .)
+    notinKeyword    reduce using rule 27 (prefix_rule -> bitANDKeyword ( args ) .)
+
+
+state 59
+
+    (38) CIDR -> IPv4 / int .
+
+    deltaKeyword    reduce using rule 38 (CIDR -> IPv4 / int .)
+    ORKeyword       reduce using rule 38 (CIDR -> IPv4 / int .)
+    newline         reduce using rule 38 (CIDR -> IPv4 / int .)
+    ,               reduce using rule 38 (CIDR -> IPv4 / int .)
+
+
+state 60
+
+    (39) CIDR -> IPv6 / int .
+
+    deltaKeyword    reduce using rule 39 (CIDR -> IPv6 / int .)
+    ORKeyword       reduce using rule 39 (CIDR -> IPv6 / int .)
+    newline         reduce using rule 39 (CIDR -> IPv6 / int .)
+    ,               reduce using rule 39 (CIDR -> IPv6 / int .)
+
+
+state 61
+
+    (15) infix_rule -> arg_names op arg deltaKeyword EQ . int
+
+    int             shift and go to state 63
+
+
+state 62
+
+    (29) args -> arg , args .
+
+    )               reduce using rule 29 (args -> arg , args .)
+
+
+state 63
+
+    (15) infix_rule -> arg_names op arg deltaKeyword EQ int .
+
+    ORKeyword       reduce using rule 15 (infix_rule -> arg_names op arg deltaKeyword EQ int .)
+    newline         reduce using rule 15 (infix_rule -> arg_names op arg deltaKeyword EQ int .)
+

@@ -16,15 +16,38 @@ class FilterRule:
 
         self.delta = delta
         self.op = op
+class Grouper(object):
+    def __init__(self, name, line, modules, aggr, branches=None):
+        self.name = name
+        self.aggr = aggr
+        self.modules = modules
+        self.line = line
+        self.branches = branches if branches else set()
 
+    def __repr__(self):
+        str = "Grouper('%s', %s, %s, %s, %s)"%(self.name, self.line,
+                                      self.modules, self.aggr, self.branches)
+        return str
 
 class Filter(object):
     def __init__(self, id, records, br_mask):
         self.id = id
         self.records = records
         self.br_mask = br_mask
+class Field(object):
+    def __init__(self, name):
+        self.name = name
+    def __repr__(self):
+        return "Field('%s')"%self.name
+class FilterRef(object):
+    def __init__(self, name, line, NOT=False):
+        self.name = name
+        self.NOT = NOT
+        self.line = line
 
-
+    def __repr__(self):
+        str = "FilterRef('%s', %s, %s)"%(self.name, self.line, self.NOT)
+        return str
 class Rule(object):
     def __init__(self, branch_mask, operation, args):
         self.operation = operation
@@ -44,7 +67,7 @@ class Parser :
     xml=[]
     entities={}
     def p_pipeline_stage_1n(self,p):
-        'pipeline_stage_1n : pipeline_stage pipeline_stage_1n'
+        'pipeline_stage_1n : pipeline_stage newline pipeline_stage_1n'
         # add a name mapping:
         p[0]=p[1]
 
@@ -65,9 +88,6 @@ class Parser :
         #print(p[4][0].op)
         self.filters.append(p[0])#TODO p4 is empty
 
-    #def p_filter_rule_1(self, p):
-    #    'filter_rule_1n : filter_rule'
-    #    p[0] = p[1]
 
     def p_filter_rule_1n(self, p):
         'filter_rule_1n : filter_rule newline filter_rule_1n'
@@ -257,7 +277,18 @@ class Parser :
         '''
         p[0] = Rule('cidr_mask', p[1], p[3])
 
-
+    ####Grouper####
+    #def p_grouper(self, p):
+    #    "grouper : grouperKeyword id '{' module1_n aggregate '}'"
+    #    p[0] = Grouper(p[2], p.lineno(2), p[4], p[5])
+        # insert aggregation of record ids (needed for ungrouping later)
+    #    p[0].aggr.insert(0, (Rule('union', p.lineno(2), [Field('rec_id'),
+    #                                                     'records'])))
+    #    p[0].aggr.insert(0, (Rule('min', p.lineno(2), [Field('stime'),
+    #                                                   'stime'])))
+    #    p[0].aggr.insert(0, (Rule('max', p.lineno(2), [Field('etime'),
+    #                                                   'etime'])))
+    #    self.groupers.append(p[0])
     def p_error(self,p):
         print("Syntax error at input line %s"%p.lineno)
 
