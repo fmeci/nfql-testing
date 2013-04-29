@@ -8,16 +8,6 @@ from nfql_parser import *
 import shutil
 if __name__ == "__main__":
 
-    #tests=['filter v4 { sourceIPv4Address = 18.0.0.1}','filter v6 {sourceIPv6Address=::1}','filter off{fragmentOffset=8}']
-    #tests=["""filter v3{sourceIPv4Address=18.0.0.255 OR  sourceIPv6Address>=::192.168.1.190
-    # sourceIPv6Address>=::1 OR sourceIPv4Address=0.0.0.0
-    # sourceTransportPort=143
-    #           }"""]
-    #try:
-        #s = input('debug > ') # Use raw_input on Python 2
-    #except EOFError:
-    #    pass
-
     files = len(sys.argv)
     for i in range(files):
         exists=True
@@ -31,6 +21,22 @@ if __name__ == "__main__":
                 parsr = Parser()
                 parsr.Parse(inp.read())
                 branchset = []
+                for gr in parsr.groupers:
+                    #print(gr.modules)
+                    grules=[]
+                    clause=[]
+                    lst=[]
+                    for md in gr.modules:
+                        for br in md.br_mask:
+                            #print(vars(br))
+                            lst.append({'term':vars(br)})
+                        clause.append({'clause':lst})
+                        lst=[]
+                    #for aggr in gr.aggr:#TODO
+                        #print(aggr.op)
+                    grouper = {'dnf-expr': clause}
+                    branchset.append({'grouper': grouper})
+                    grouper = []
                 for fl in parsr.filters:
                     rules = []
                     lst = []

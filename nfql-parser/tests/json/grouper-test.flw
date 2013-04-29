@@ -1,0 +1,2 @@
+grouper scan { module md { sourceIPv4Address = sourceIPv4Address destinationIPv4Address = destinationIPv4Address}
+ aggregate sourceIPv4Address, destinationIPv4Address}

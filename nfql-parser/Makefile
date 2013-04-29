@@ -14,15 +14,16 @@ endif
 
 _virtualenv:
 	virtualenv _virtualenv
+
 test:
-	/usr/bin/env python3 src/tests.py
-all:
+	mkdir -p output
 	/usr/bin/env python3 src/main.py tests/query-https-tcp-session-parsed.flw > /dev/null
 	/usr/bin/env python3 src/main.py tests/query-dns-udp-parsed.flw > /dev/null
 	/usr/bin/env python3 src/main.py tests/query-http-octets-parsed.flw > /dev/null
 	/usr/bin/env python3 src/main.py tests/query-http-tcp-session-parsed.flw > /dev/null
 	/usr/bin/env python3 src/main.py tests/query-mdns-udp-parsed.flw > /dev/null
 	/usr/bin/env python3 src/main.py tests/query-tcp-session-parsed.flw > /dev/null
+	/usr/bin/env python3 src/tests.py
 	mv tests/*.json output
 
 
