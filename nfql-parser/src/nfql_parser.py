@@ -794,12 +794,12 @@ class Parser :
         if p[1] in self.branch_ids:
             pass
         else:
-            print('Undefined branch id %s used at line %'%(p[1],p.lineno(2)))
+            print("Undefined branch id '%s' used at line %s"%(p[1],p.lineno(2)))
             exit(-1)
         if p[5] in self.branch_ids:
             pass
         else:
-            print('Undefined branch id %s used at line %' % (p[5], p.lineno(2)))
+            print("Undefined branch id '%s' used at line %s" % (p[5], p.lineno(2)))
             exit(-1)
 
         try:
