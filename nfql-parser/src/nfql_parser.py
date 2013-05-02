@@ -97,8 +97,8 @@ class GrouperRule(object):
         }
 class MergerRule(object):
     def __init__(self, branch1_id,branch2_id,name1, datatype1,name2,datatype2,deltavalue, op,optype):
-        self.branch1_id = branch1_id,
-        self.branch2_id = branch2_id,
+        self.branch1_id = branch1_id
+        self.branch2_id = branch2_id
         self.offset = {
             'f1_name': name1,
             'f1_datatype': datatype1,
@@ -122,6 +122,8 @@ class Parser :
     tokens=[]
     tokens = Tokenizer.tokens
     filters = []
+    branch_id_mapping={}
+    br_id = 0
     groupers=[]
     grouper= Grouper('',0,'','','')
     groupfilters=[]
@@ -160,6 +162,8 @@ class Parser :
         p[0]= Branch(p[2],p.lineno(2),self.filters,self.groupers,self.groupfilters)
         self.branches.append(p[0])
         self.branch_ids.append(p[2])
+        self.branch_id_mapping[p[2]]=self.br_id
+        self.br_id = self.br_id + 1
         self.groupfilters=[]
         self.filters=[]
         self.groupers=[]
@@ -262,33 +266,37 @@ class Parser :
         'infix_rule : arg_names op arg deltaKeyword delta_arg'
         dt = p[1][0]
         opt = p[2]
-        if (self.entities[dt] == 'unsigned8'):
-            if (len('{0:08b}'.format(int(p[3][0]))) <= 8):
-                pass
-            else:
-                print('Value out of range at line %s: 8bit' % p.lineno(1))
-                exit(-1)
-        elif (self.entities[dt] == 'unsigned16'):
-            if (len('{0:08b}'.format(int(p[3][0]))) <= 16):
-                pass
-            else:
-                print('Value out of range at line %s: 16bit' % p.lineno(1))
-                exit(-1)
-        elif (self.entities[dt] == 'unsigned32'):
-            if (len('{0:08b}'.format(int(p[3][0]))) <= 32):
-                pass
-            else:
-                print('Value out of range at line %s: 32bit' % p.lineno(1))
-                exit(-1)
-        elif (self.entities[dt] == 'unsigned64'):
-            if (len('{0:08b}'.format(int(p[3][0]))) <= 64):
-                pass
-            else:
-                print('Value out of range at line %s: 64bit' % p.lineno(1))
-                exit(-1)
-
-                #print('Value out of range at line %s')
-        rdt = datatype_mappings[self.entities[dt]]
+        try:
+            if (self.entities[dt] == 'unsigned8'):
+                if (len('{0:08b}'.format(int(p[3][0]))) <= 8):
+                    pass
+                else:
+                    print('Value out of range line %s: 8bit' % p.lineno(1))
+                    exit(-1)
+            elif (self.entities[dt] == 'unsigned16'):
+                if (len('{0:08b}'.format(int(p[3][0]))) <= 16):
+                    pass
+                else:
+                    print('Value out of range line %s: 16bit' % p.lineno(1))
+                    exit(-1)
+            elif (self.entities[dt] == 'unsigned32'):
+                if (len('{0:08b}'.format(int(p[3][0]))) <= 32):
+                    pass
+                else:
+                    print('Value out of range line %s: 32bit' % p.lineno(1))
+                    exit(-1)
+            elif (self.entities[dt] == 'unsigned64'):
+                if (len('{0:08b}'.format(int(p[3][0]))) <= 64):
+                    pass
+                else:
+                    print('Value out of range line %s: 64bit' % p.lineno(1))
+                    exit(-1)
+        except:
+            pass
+        try:
+            rdt = datatype_mappings[self.entities[dt]]
+        except KeyError:
+            print('Invalid field name, line %s' % p.lineno(2))
 
         operator = datatype_mappings[opt]
         fl = FilterRule(dt, p[3][0], rdt, int(p[6]), operator)
@@ -299,34 +307,37 @@ class Parser :
         'infix_rule : arg_names op arg'
         dt=p[1][0]
         opt=p[2]
-        if (self.entities[dt] == 'unsigned8'):
-            if (len('{0:08b}'.format(int(p[3][0]))) <= 8):
-                pass
-            else:
-                print('Value out of range at line %s: 8bit' % p.lineno(1))
-                exit(-1)
-        elif(self.entities[dt] == 'unsigned16'):
-            if(len('{0:08b}'.format(int(p[3][0])))<=16):
-                pass
-            else:
-                print('Value out of range at line %s: 16bit'%p.lineno(1))
-                exit(-1)
-        elif (self.entities[dt] == 'unsigned32'):
-            if (len('{0:08b}'.format(int(p[3][0]))) <= 32):
-                pass
-            else:
-                print('Value out of range at line %s: 32bit' % p.lineno(1))
-                exit(-1)
-        elif(self.entities[dt] == 'unsigned64'):
-            if(len('{0:08b}'.format(int(p[3][0])))<=64):
-                pass
-            else:
-                print('Value out of range at line %s: 64bit'%p.lineno(1))
-                exit(-1)
-
-                #print('Value out of range at line %s')
-        rdt=datatype_mappings[self.entities[dt]]
-
+        try:
+            if (self.entities[dt] == 'unsigned8'):
+                if (len('{0:08b}'.format(int(p[3][0]))) <= 8):
+                    pass
+                else:
+                    print('Value out of range line %s: 8bit' % p.lineno(1))
+                    exit(-1)
+            elif(self.entities[dt] == 'unsigned16'):
+                if(len('{0:08b}'.format(int(p[3][0])))<=16):
+                    pass
+                else:
+                    print('Value out of range line %s: 16bit'%p.lineno(1))
+                    exit(-1)
+            elif (self.entities[dt] == 'unsigned32'):
+                if (len('{0:08b}'.format(int(p[3][0]))) <= 32):
+                    pass
+                else:
+                    print('Value out of range line %s: 32bit' % p.lineno(1))
+                    exit(-1)
+            elif(self.entities[dt] == 'unsigned64'):
+                if(len('{0:08b}'.format(int(p[3][0])))<=64):
+                    pass
+                else:
+                    print('Value out of range line %s: 64bit'%p.lineno(1))
+                    exit(-1)
+        except:
+            pass
+        try:
+            rdt=datatype_mappings[self.entities[dt]]
+        except KeyError:
+            print('Invalid field name, line %s' % p.lineno(2))
         operator=datatype_mappings[opt]
         fl=FilterRule(dt,p[3][0],rdt,0,operator)
         #self.filterRules.append(fl)
@@ -446,13 +457,12 @@ class Parser :
             rdt1=datatype_mappings[self.entities[p[1]]]
             rdt2=datatype_mappings[self.entities[p[3]]]
         except KeyError:
-            print('Invalid field name at line %s'%p.lineno)
+            print('Invalid field name, line %s'%p.lineno)
         operator = datatype_mappings[p[2]]
         if(rdt1 != rdt2):
-            print('Datatype mismatch at line %s'%p.lineno)
+            print('Datatype mismatch line %s'%p.lineno)
             exit(1)
-        #print(operator)
-        p[0] = GrouperRule(p[1],rdt1,p[3],rdt2,0,operator,'RULE_REL')
+        p[0] = GrouperRule(p[1],rdt1,p[3],str(rdt2).replace("S1","S2"),0,operator,'RULE_REL')
 
 
     ##absolute id=arg
@@ -460,35 +470,41 @@ class Parser :
         'grouper_rule : id grouper_op g_arg'
         dt = p[1]
         try:
+            rdt1 = datatype_mappings[self.entities[p[1]]]
+            rdt2 = datatype_mappings[self.entities[p[3]]]
+        except KeyError:
+            print('Invalid field name, line %s' % p.lineno(2))
+            exit(-1)
+        try:
             if (self.entities[dt] == 'unsigned8'):
                 if (len('{0:08b}'.format(int(p[3]))) <= 8):
                     pass
                 else:
-                    print('Value out of range at line %s: 8bit' % p.lineno(1))
+                    print('Value out of range line %s: 8bit' % p.lineno(1))
                     exit(-1)
             elif (self.entities[dt] == 'unsigned16'):
                 if (len('{0:08b}'.format(int(p[3]))) <= 16):
                     pass
                 else:
-                    print('Value out of range at line %s: 16bit' % p.lineno(1))
+                    print('Value out of range line %s: 16bit' % p.lineno(1))
                     exit(-1)
             elif (self.entities[dt] == 'unsigned32'):
                 if (len('{0:08b}'.format(int(p[3]))) <= 32):
                     pass
                 else:
-                    print('Value out of range at line %s: 32bit' % p.lineno(1))
+                    print('Value out of range line %s: 32bit' % p.lineno(1))
                     exit(-1)
             elif (self.entities[dt] == 'unsigned64'):
                 if (len('{0:08b}'.format(int(p[3]))) <= 64):
                     pass
                 else:
-                    print('Value out of range at line %s: 64bit' % p.lineno(1))
+                    print('Value out of range line %s: 64bit' % p.lineno(1))
                     exit(-1)
-        except KeyError:
+        except :
             pass
 
         operator = datatype_mappings[p[2]]
-        p[0] = GrouperRule(p[1], p[1], p[3], p[1], 0, operator, 'RULE_ABS')
+        p[0] = GrouperRule(p[1], rdt1, p[3], str(rdt2).replace("S1","S2"), 0, operator, 'RULE_ABS')
 
     def p_grouper_arg(self, p):
         '''
@@ -508,12 +524,13 @@ class Parser :
             rdt1 = datatype_mappings[self.entities[p[1]]]
             rdt2 = datatype_mappings[self.entities[p[3]]]
         except KeyError:
-            print('Invalid field name at line %s' % p.lineno)
+            print('Invalid field name, line %s' % p.lineno(2))
+            exit(-1)
         operator = datatype_mappings[p[2]]
         if (rdt1 != rdt2):
-            print('Datatype mismatch at line %s' % p.lineno)
-            exit(1)
-        p[0] = GrouperRule(p[1],rdt1,p[3],rdt2,p[5],operator,'RULE_REL')
+            print('Datatype mismatch line %s' % p.lineno(2))
+            exit(-1)
+        p[0] = GrouperRule(p[1],rdt1,p[3],str(rdt2).replace("S1","S2"),p[5],operator,'RULE_REL')
 
 
     def p_grouper_op(self, p):
@@ -652,34 +669,38 @@ class Parser :
         'gf_rule : arg_names op arg'
         dt = p[1][0]
         opt = p[2]
-        if (self.entities[dt] == 'unsigned8'):
-            if (len('{0:08b}'.format(int(p[3][0]))) <= 8):
-                pass
-            else:
-                print('Value out of range at line %s: 8bit' % p.lineno(1))
-                exit(-1)
-        elif (self.entities[dt] == 'unsigned16'):
-            if (len('{0:08b}'.format(int(p[3][0]))) <= 16):
-                pass
-            else:
-                print('Value out of range at line %s: 16bit' % p.lineno(1))
-                exit(-1)
-        elif (self.entities[dt] == 'unsigned32'):
-            if (len('{0:08b}'.format(int(p[3][0]))) <= 32):
-                pass
-            else:
-                print('Value out of range at line %s: 32bit' % p.lineno(1))
-                exit(-1)
-        elif (self.entities[dt] == 'unsigned64'):
-            if (len('{0:08b}'.format(int(p[3][0]))) <= 64):
-                pass
-            else:
-                print('Value out of range at line %s: 64bit' % p.lineno(1))
-                exit(-1)
-
-                #print('Value out of range at line %s')
-        rdt = datatype_mappings[self.entities[dt]]
-
+        try:
+            if (self.entities[dt] == 'unsigned8'):
+                if (len('{0:08b}'.format(int(p[3][0]))) <= 8):
+                    pass
+                else:
+                    print('Value out of range line %s: 8bit' % p.lineno(1))
+                    exit(-1)
+            elif (self.entities[dt] == 'unsigned16'):
+                if (len('{0:08b}'.format(int(p[3][0]))) <= 16):
+                    pass
+                else:
+                    print('Value out of range line %s: 16bit' % p.lineno(1))
+                    exit(-1)
+            elif (self.entities[dt] == 'unsigned32'):
+                if (len('{0:08b}'.format(int(p[3][0]))) <= 32):
+                    pass
+                else:
+                    print('Value out of range line %s: 32bit' % p.lineno(1))
+                    exit(-1)
+            elif (self.entities[dt] == 'unsigned64'):
+                if (len('{0:08b}'.format(int(p[3][0]))) <= 64):
+                    pass
+                else:
+                    print('Value out of range line %s: 64bit' % p.lineno(1))
+                    exit(-1)
+        except:
+            pass
+        try:
+            rdt = datatype_mappings[self.entities[dt]]
+        except KeyError:
+            print('Invalid field name, line %s' % p.lineno(2))
+            exit(-1)
         operator = datatype_mappings[opt]
         fl = GroupFilterRule(dt, p[3][0], rdt, 0, operator)
         p[0] = fl
@@ -688,34 +709,37 @@ class Parser :
         'gf_rule : arg_names op arg deltaKeyword delta_arg'
         dt = p[1][0]
         opt = p[2]
-        if (self.entities[dt] == 'unsigned8'):
-            if (len('{0:08b}'.format(int(p[3][0]))) <= 8):
-                pass
-            else:
-                print('Value out of range at line %s: 8bit' % p.lineno(1))
-                exit(-1)
-        elif (self.entities[dt] == 'unsigned16'):
-            if (len('{0:08b}'.format(int(p[3][0]))) <= 16):
-                pass
-            else:
-                print('Value out of range at line %s: 16bit' % p.lineno(1))
-                exit(-1)
-        elif (self.entities[dt] == 'unsigned32'):
-            if (len('{0:08b}'.format(int(p[3][0]))) <= 32):
-                pass
-            else:
-                print('Value out of range at line %s: 32bit' % p.lineno(1))
-                exit(-1)
-        elif (self.entities[dt] == 'unsigned64'):
-            if (len('{0:08b}'.format(int(p[3][0]))) <= 64):
-                pass
-            else:
-                print('Value out of range at line %s: 64bit' % p.lineno(1))
-                exit(-1)
-
-                #print('Value out of range at line %s')
-        rdt = datatype_mappings[self.entities[dt]]
-
+        try:
+            if (self.entities[dt] == 'unsigned8'):
+                if (len('{0:08b}'.format(int(p[3][0]))) <= 8):
+                    pass
+                else:
+                    print('Value out of range line %s: 8bit' % p.lineno(1))
+                    exit(-1)
+            elif (self.entities[dt] == 'unsigned16'):
+                if (len('{0:08b}'.format(int(p[3][0]))) <= 16):
+                    pass
+                else:
+                    print('Value out of range line %s: 16bit' % p.lineno(1))
+                    exit(-1)
+            elif (self.entities[dt] == 'unsigned32'):
+                if (len('{0:08b}'.format(int(p[3][0]))) <= 32):
+                    pass
+                else:
+                    print('Value out of range line %s: 32bit' % p.lineno(1))
+                    exit(-1)
+            elif (self.entities[dt] == 'unsigned64'):
+                if (len('{0:08b}'.format(int(p[3][0]))) <= 64):
+                    pass
+                else:
+                    print('Value out of range line %s: 64bit' % p.lineno(1))
+                    exit(-1)
+        except:
+            pass
+        try:
+            rdt = datatype_mappings[self.entities[dt]]
+        except KeyError:
+            print('Invalid field name, line %s' % p.lineno(2))
         operator = datatype_mappings[opt]
         fl = GroupFilterRule(dt, p[3][0], rdt, int(p[5]), operator)
         p[0] = fl
@@ -794,25 +818,26 @@ class Parser :
         if p[1] in self.branch_ids:
             pass
         else:
-            print("Undefined branch id '%s' used at line %s"%(p[1],p.lineno(2)))
+            print("Undefined branch id '%s' used line %s"%(p[1],p.lineno(2)))
             exit(-1)
         if p[5] in self.branch_ids:
             pass
         else:
-            print("Undefined branch id '%s' used at line %s" % (p[5], p.lineno(2)))
+            print("Undefined branch id '%s' used line %s" % (p[5], p.lineno(2)))
             exit(-1)
 
         try:
             rdt1 = datatype_mappings[self.entities[p[3]]]
             rdt2 = datatype_mappings[self.entities[p[7]]]
         except KeyError:
-            print('Invalid field name at line %s' % p.lineno(2))
+            print('Invalid field name, line %s' % p.lineno(2))
             exit(-1)
         operator = datatype_mappings[p[4]]
         if (rdt1 != rdt2):
-            print('Datatype mismatch at line %s' % p.lineno(2))
+            print('Datatype mismatch line %s' % p.lineno(2))
             exit(1)
-        p[0]=MergerRule(0,1,p[3],rdt1,p[7],rdt2,0,operator,'RULE_REL')
+
+        p[0]=MergerRule(self.branch_id_mapping[p[1]],self.branch_id_mapping[p[5]],p[3],rdt1,p[7],str(rdt2).replace("S1","S2"),0,operator,'RULE_REL')
 
 
     def p_allen_op(self, p):

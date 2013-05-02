@@ -29,6 +29,7 @@ if __name__ == "__main__":
                 for branch in parsr.branches:
                     grules=[]
                     gclause = []
+                    mclause=[]
                     gf_clause = []
                     clause = []
                     aggregation=[]
@@ -39,7 +40,7 @@ if __name__ == "__main__":
                         for aggr in gr.aggr:
                             for a_rule in aggr:
                                 lst.append({'term': vars(a_rule)})
-                            aggregation.append({'clause': lst})
+                        aggregation={'clause': lst}
                         lst=[]
                         for rule in list(itertools.product(*grules)):
                             for r in rule:
@@ -77,8 +78,27 @@ if __name__ == "__main__":
                     groupfilter = []
                     groupfilter = {'dnf-expr': gf_clause}
                     branchset.append({'filter': filter,'grouper':grouper,'groupfilter':groupfilter})
+                for merger in parsr.merger:
+                    mrules = []
+                    lst = []
+                    for mrule in merger.br_mask:
+                        #print(frule)
+                        mrules.append(mrule)
+                    for rule in list(itertools.product(*mrules)):
+                        for r in rule:
+                            lst.append({'term': vars(r)})
+                        mclause.append({'clause': lst})
+                        lst = []
+                merger={'dnf-expr': mclause}
+                query['merger']=merger
                 query['branchset']= branchset
-
+                #TODO
+                """
+                    aggregation lists and dict in dict
+                    filed names
+                """
+                """
+                """
 				
                 query['ungrouper']= {}
                 #query['ungrouper']=branchset
