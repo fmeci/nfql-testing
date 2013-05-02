@@ -1,0 +1,44 @@
+branch A {
+    filter v6
+    {
+        tcpSourcePort=443
+        protocolIdentifier=6
+    }
+    grouper id
+    {
+        tcpSourcePort=tcpSourcePort OR sourceIPv6Address=destinationIPv6Address
+        tcpDestinationPortssss=39
+        aggregation
+        {
+            sum(responderPackets)
+        }
+    }
+    groupfilter gf1
+    {
+
+       bgpSourceAsNumber > 800 delta 7
+
+    }
+}
+branch B {
+    filter v5 {
+        sourceIPv4Address=18.0.0.1
+        destinationIPv4Address=0.0.0.0
+    }
+
+    grouper vv6
+    {
+        sourceIPv4Address=destinationIPv4Address
+    }
+}
+
+merger {
+
+    A.sourceIPv4Address = B.destinationIPv4Address
+    A.destinationIPv4Address = B.sourceIPv4Address
+
+    }
+
+ungrouper
+{}
+

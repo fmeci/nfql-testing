@@ -19,41 +19,69 @@ if __name__ == "__main__":
                 exists=False
             if(exists):
                 parsr = Parser()
-                parsr.Parse(inp.read())
+                parsr.Parse(inp.read()+'\n')
                 branchset = []
-                for gr in parsr.groupers:
-                    #print(gr.modules)
+                query={}
+                filter=[]
+
+
+                grouper=[]
+                for branch in parsr.branches:
                     grules=[]
-                    clause=[]
-                    lst=[]
-                    for md in gr.modules:
-                        for br in md.br_mask:
-                            #print(vars(br))
-                            lst.append({'term':vars(br)})
-                        clause.append({'clause':lst})
-                        lst=[]
-                    #for aggr in gr.aggr:#TODO
-                        #print(aggr.op)
-                    grouper = {'dnf-expr': clause}
-                    branchset.append({'grouper': grouper})
-                    grouper = []
-                for fl in parsr.filters:
-                    rules = []
-                    lst = []
+                    gclause = []
+                    gf_clause = []
                     clause = []
-                    for frule in fl.br_mask:
-                        rules.append(frule)
-                    for rule in list(itertools.product(*rules)):
-                        for r in rule:
-                            lst.append({'term': vars(r)})
-                        clause.append({'clause': lst})
+                    aggregation=[]
+                    lst=[]
+                    for gr in branch.groupers:
+                        for grule in gr.modules:
+                            grules.append(grule)
+                        for aggr in gr.aggr:
+                            for a_rule in aggr:
+                                lst.append({'term': vars(a_rule)})
+                            aggregation.append({'clause': lst})
+                        lst=[]
+                        for rule in list(itertools.product(*grules)):
+                            for r in rule:
+                                lst.append({'term': vars(r)})
+                            gclause.append({'clause': lst})
+                            lst = []
+                    grouper = []
+                    grouper = {'dnf-expr': gclause,'aggregation':aggregation}
+                    for fl in branch.filters:
+                        #print(fl.br_mask)
+                        rules = []
                         lst = []
+
+                        for frule in fl.br_mask:
+                            #print(frule)
+                            rules.append(frule)
+                        for rule in list(itertools.product(*rules)):
+                            for r in rule:
+                                lst.append({'term': vars(r)})
+                            clause.append({'clause': lst})
+                            lst = []
                     filter = {'dnf-expr': clause}
-                    branchset.append({'filter': filter})
-                    filter=[]
+                    for gf in branch.groupfilters:
+                        gfrules = []
+                        gflst = []
+
+                        for gfrule in gf.br_mask:
+                            gfrules.append(gfrule)
+                        #print(gfrules)
+                        for rule in list(itertools.product(*gfrules)):
+                            for r in rule:
+                                gflst.append({'term': vars(r)})
+                            gf_clause.append({'clause': gflst})
+                            gflst = []
+                    groupfilter = []
+                    groupfilter = {'dnf-expr': gf_clause}
+                    branchset.append({'filter': filter,'grouper':grouper,'groupfilter':groupfilter})
+                query['branchset']= branchset
 
 				
-                query = {'branchset': branchset,'ungrouper': {}}
+                query['ungrouper']= {}
+                #query['ungrouper']=branchset
                 fjson = json.dumps(query, indent=2)
                 file = open('%s.json'%inp.name[:-4], 'w')
                 assert file.write(fjson)
